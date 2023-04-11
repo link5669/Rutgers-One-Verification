@@ -3,6 +3,12 @@ const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
 
+CAMDEN_ROLE_ID = '1079187979098148975'
+NEW_BRUNSWICK_ROLE_ID = '1079187896147390576'
+NEWARK_ROLE_ID = '1079187951541563504'
+RUTGERS_ROLE_ID = '1079187951541563504'
+COMMUNITY_ROLE_ID = '1073279680435732590'
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 client.commands = new Collection();
@@ -15,8 +21,6 @@ for (const file of commandFiles) {
 	const command = require(filePath);
 	if ('data' in command && 'execute' in command) {
 		client.commands.set(command.data.name, command);
-	} else {
-		console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 	}
 }
 
@@ -26,14 +30,13 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (!command) return;
 	hasRoles = false
 	try {
-		console.log(interaction.member._roles)
 		hasCampus = false
 		hasAffiliation = false
 		for (role in interaction.member._roles) {
-			if (role == '1079187979098148975' || role == '1079187896147390576' || role == '1079187951541563504') {
+			if (role == CAMDEN_ROLE_ID || role == NEW_BRUNSWICK_ROLE_ID || role == NEWARK_ROLE_ID) {
 				hasCampus = true
 			}
-			if (role == '1073280027111731230' || role == '1073279680435732590') {
+			if (role == RUTGERS_ROLE_ID || role == COMMUNITY_ROLE_ID) {
 				hasAffiliation = true
 			}
 		}
