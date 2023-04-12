@@ -6,8 +6,9 @@ const { token } = require('./config.json');
 CAMDEN_ROLE_ID = '1079187979098148975'
 NEW_BRUNSWICK_ROLE_ID = '1079187896147390576'
 NEWARK_ROLE_ID = '1079187951541563504'
-RUTGERS_ROLE_ID = '1079187951541563504'
+RUTGERS_ROLE_ID = '1073280027111731230'
 COMMUNITY_ROLE_ID = '1073279680435732590'
+VERIFIED_ROLE_ID = '1082840558076186687'
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -28,20 +29,28 @@ client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 	const command = client.commands.get(interaction.commandName);
 	if (!command) return;
-	hasRoles = false
+	hasRoles = 0
+	hasCampus = false
+	hasAffiliation = false
 	try {
-		hasCampus = false
-		hasAffiliation = false
-		for (role in interaction.member._roles) {
+		for(let i = 0; i < interaction.member._roles.length; i++) {	
+			role = interaction.member._roles[i]
+			if (role == VERIFIED_ROLE_ID) {
+				console.log("already verified")
+				hasRoles = 2
+				break
+			}
 			if (role == CAMDEN_ROLE_ID || role == NEW_BRUNSWICK_ROLE_ID || role == NEWARK_ROLE_ID) {
+				console.log("has campus")
 				hasCampus = true
 			}
 			if (role == RUTGERS_ROLE_ID || role == COMMUNITY_ROLE_ID) {
+				console.log("has affiliation")
 				hasAffiliation = true
 			}
 		}
-		if (hasCampus && hasAffiliation) {
-			hasRoles = true
+		if (hasCampus && hasAffiliation && hasRoles == 0) {
+			hasRoles = 1
 		}
 		await command.execute(interaction, hasRoles, client);
 	} catch (error) {
